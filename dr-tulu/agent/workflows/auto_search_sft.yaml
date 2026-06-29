@@ -1,0 +1,74 @@
+tool_parser: "v20250824"
+
+# Client config for the SearchAgent (SFT model)
+search_agent_base_url: "http://localhost:30001/v1"
+search_agent_model_name: "/apdcephfs_zwfy4/share_303945702/wenhanliu/llm/DR-Tulu-8B"
+search_agent_tokenizer_name: "/apdcephfs_zwfy4/share_303945702/wenhanliu/llm/Qwen3-8B"
+search_agent_api_key: "dummy-key"
+search_agent_max_tokens: 32000
+search_agent_temperature: 1.0
+search_agent_max_tool_calls: 10
+
+# Client config for the browse/reader agent (general model)
+use_browse_agent: false
+browse_agent_base_url: "http://localhost:30002/v1"
+browse_agent_model_name: "/apdcephfs_zwfy4/share_303945702/wenhanliu/llm/Qwen3-8B"
+browse_agent_tokenizer_name: "/apdcephfs_zwfy4/share_303945702/wenhanliu/llm/Qwen3-8B"
+browse_agent_api_key: "dummy-key"
+browse_agent_max_tokens: 32000
+browse_agent_temperature: 0.3
+
+# Search tool configuration
+# number_documents_to_search: how many candidates to fetch from the search API
+# (always applies, regardless of reranker).
+number_documents_to_search: 30
+# return_topn: how many docs to finally return to the agent (always applies,
+# except for setwise rerankers Rank4Gen/SETR which return whatever they pick).
+return_topn: 5
+search_timeout: 1800
+
+# Browse tool configuration
+browse_tool_name: "jina"
+browse_timeout: 1800
+browse_max_pages_to_fetch: 10
+browse_context_char_length: 6000
+
+# Reranker configuration
+use_reranker: false
+# Supported types:
+#   pointwise_bge | pointwise_monot5 | pointwise_rankt5
+#   listwise_rankvicuna | listwise_rankzephyr
+#   setwise_rank4gen | setwise_setr
+#   listwise_openai | listwise_openai_rubrics
+#   pointwise / listwise (legacy aliases for bge / generic-vllm-listwise)
+reranker_type: "pointwise_bge"
+reranker_model_name: "/apdcephfs_zwfy4/share_303945702/wenhanliu/llm/bge-reranker-large"
+reranker_api_url: "http://localhost:30003/v1"
+reranker_doc_max_words: 100
+reranker_browse_max_pages: 50
+reranker_browse_timeout: 600
+reranker_timeout: 600
+reranker_listwise_max_tokens: 1024
+reranker_skip_browse: false
+reranker_append_page_content_to_snippet: true
+
+# HF backend (monoT5 / RankT5) only.
+reranker_hf_device: "cuda:0"
+
+# Sliding-window reranker (RankVicuna / RankZephyr) only.
+reranker_window_size: 20
+reranker_step: 10
+
+# Rank4Gen only.
+reranker_rank4gen_downstream_model: "default"
+reranker_rank4gen_downstream_desc: "default"
+
+# ---- OpenAI (Tencent data_eval) listwise reranker ----
+reranker_openai_model: "api_openai_gpt-5.1-response"
+reranker_openai_host: null
+reranker_openai_port: null
+reranker_openai_web_search: false
+reranker_openai_max_retries: 5
+
+# ---- OpenAI rubrics-guided listwise reranker ----
+reranker_openai_rubrics_model: "api_openai_gpt-5.1-response"

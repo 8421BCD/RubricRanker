@@ -1,0 +1,8 @@
+method: "setwise_setr"
+prompt: |-
+  I will provide you with {num} passages, each indicated by a numerical identifier []. Select the passages based on their relevance to the search query: {question}.
+
+  {context}
+
+  Search Query: {question}.
+  Select the passages that mostly covers clear and diverse informations to answer the query. Number of passages is unlimited. The format of final output should be '### Final Selection: [] []', e.g., ### Final Selection: [2] [1]. Only respond with the selection results, do not say any word or explain.

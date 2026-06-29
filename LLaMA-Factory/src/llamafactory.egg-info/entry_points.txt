@@ -1,0 +1,4 @@
+[console_scripts]
+llamafactory-cli = llamafactory.cli:main
+lmf = llamafactory.cli:main
+

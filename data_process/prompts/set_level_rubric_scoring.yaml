@@ -1,0 +1,59 @@
+# Prompt templates for SET-level rubric scoring used in RL reward.
+# Given a query (and optional query_intent for deepresearch), a SET of selected
+# documents (formatted as "[1] xxx [2] xxx ..."), and one or more set-level
+# rubrics (Relevance / Conciseness / Consistency, possibly multiple per type),
+# the LLM gives EACH rubric an INTEGER score in [0, 10]. The reward function
+# then divides each by 10 to normalize to [0, 1] and aggregates by weight.
+#
+# NOTE: any literal curly braces in the template must be doubled ({{ / }}).
+
+deepresearch: |-
+  You are a strict evaluator. Given a search query issued by a deep-research agent, the agent's reasoning as query intent, a SET of retrieved candidate documents, and one or more scoring rubrics, give each rubric an INTEGER score from 0 (worst) to 10 (best) for a document set.
+
+  The query intent may clarify why this query was issued and what information it is trying to find, but it may also contain broader, exploratory, or irrelevant thoughts. Stay anchored on the query itself and only use the parts of the query intent that are actually relevant.
+
+  Scoring rules:
+  - Judge the document set strictly against each rubric's description. Each rubric is independent.
+  - Higher score = the set better matches the rubric description; lower score = worse match.
+  - The set is judged as a whole (e.g., does the combined set cover what the rubric asks for.).
+
+  Output format (STRICT): output ONLY the integer scores in the SAME ORDER as the rubrics listed below, separated by a single space. No other text, no explanation, no labels.
+  Example (when 3 rubrics are listed): 7 3 5
+  Example (when 1 rubric is listed): 5
+
+  [QUERY]
+  {query}
+
+  [QUERY INTENT]
+  {query_intent}
+
+  [SCORING RUBRICS]
+  {rubrics_block}
+
+  [CANDIDATE DOCUMENT SET]
+  {doc_set}
+
+  Now output the scores.
+
+rag: |-
+  You are a strict evaluator. Given a user question, a SET of retrieved candidate documents, and one or more scoring rubrics, give each rubric an INTEGER score from 0 (worst) to 10 (best) for a document set.
+
+  Scoring rules:
+  - Judge the document set strictly against each rubric's description. Each rubric is independent.
+  - Higher score = the set better matches the rubric description; lower score = worse match.
+  - The set is judged as a whole (e.g., does the combined set cover what the rubric asks for.).
+
+  Output format (STRICT): output ONLY the integer scores in the SAME ORDER as the rubrics listed below, separated by a single space. No other text, no explanation, no labels.
+  Example (when 3 rubrics are listed): 7 3 5
+  Example (when 1 rubric is listed): 5
+
+  [QUERY]
+  {query}
+
+  [SCORING RUBRICS]
+  {rubrics_block}
+
+  [CANDIDATE DOCUMENT SET]
+  {doc_set}
+
+  Now output the scores.

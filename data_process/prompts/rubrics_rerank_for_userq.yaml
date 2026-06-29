@@ -1,0 +1,41 @@
+# Prompt template for rubrics-guided listwise document reranking.
+# Use str.format(query=..., rubrics=..., num_docs=...,
+# formatted_docs=..., top_n=...) in code.
+# NOTE: any literal curly braces in the template must be doubled ({{ / }}).
+
+rubrics_rerank: |
+  You are selecting the best subset of retrieved web documents for a user question, guided by hierarchical evaluation rubrics.
+
+  You will be given:
+  1. The user question.
+  2. The hierarchical rubrics used to judge document-set quality. These are split into:
+      - **Set-level rubrics** (Relevance / Conciseness / Consistency): judge the whole selected set jointly.
+        * **Relevance is the primary objective**. The document set you select should satisfy these relevance rubrics as much as possible—particularly those with high weights.
+        * Conciseness and Consistency are **tie-breakers / penalties**, not primary objectives. Only use them to choose among subsets with comparable Relevance coverage.
+      - **Doc-level rubrics** (Source Authority / Timeliness): judge each individual document. Doc-level rubrics may be empty; if so, ignore them.
+        * Doc-level rubrics are **prerequisites, not rewards**. A document must first contribute to at least one Relevance rubric to be considered. **Never include a document solely because it looks authoritative or up-to-date.**
+      Each rubric has a description and an integer weight from 1 (marginal) to 5 (critical). The higher the weight, the more important it is.
+  3. A list of {num_docs} retrieved passages, each prefixed by a numerical identifier like [1], [2], ....
+
+  Your job:
+  1. Read the user question to infer the actual information need.
+  2. Read the rubrics, which evaluate the quality of a document set.
+  3. Select at most {top_n} documents from the retrieved web documents so that the document set satisfies the Set-level Rubrics and Doc-level Rubrics as much as possible, especially high-weight rubrics. The selected set should cover the important information needs, avoid unnecessary redundancy, and prefer documents that satisfy doc-level rubrics (if provided). If no rubrics are provided, please select documents based on their relevance to the user question.
+  4. After selection, rank the selected documents from MOST to LEAST useful for answering the user question.
+
+  Output format (STRICT):
+  Return ONLY the selected document identifiers in order, each wrapped in square brackets and separated by a single space. No other text, no reasoning, no explanation.
+  Example: [4] [2] [7] [11] [1]
+
+  Inputs:
+
+  [QUERY]
+  {query}
+
+  [RUBRICS]
+  {rubrics}
+
+  [CANDIDATE DOCUMENTS]
+  {formatted_docs}
+
+  Now output the selected and ranked document identifiers (at most {top_n}).

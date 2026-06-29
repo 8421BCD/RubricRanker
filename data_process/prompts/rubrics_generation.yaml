@@ -1,0 +1,98 @@
+# Prompt template for rubrics generation.
+# Use str.format(query=..., query_intent=..., reference_answer=...) in code.
+# NOTE: any literal curly braces in the template must be doubled ({{ / }}).
+
+rubrics_generation: |
+  You are designing hierarchical search rubrics for evaluating the quality of a document set for answering a query.
+
+  Your task is to generate query-specific rubrics under a fixed meta-rubric framework.
+
+  You will be given:
+  1. The query.
+  2. The query intent, which clarifies the true information need behind the query. 
+  3. A reference answer.
+
+  Note that the query intent may contain irrelevant, broader, or overly expanded thoughts. So use the query as the primary anchor. The query intent is only for clarifying the real goal, scope, constraints, and expected answer shape of this query. Stay tightly focused on the query itself.
+  The answer often contains key information across different aspects needed to address the query, which is important for generating rubrics.
+
+  Your job:
+  - First analyze the query, the query intent, and the reference answer.
+  - Then, generate query-specific rubrics under each meta rubric. If a meta rubric (such as Source Authority and Timeliness) is not needed for this query, output an empty list [] for that meta rubric.
+  - Each query-specific rubric must have an integer weight from 1 to 5.
+
+  Weight scale:
+  - 1 = marginally useful; minor added value only
+  - 2 = useful but secondary
+  - 3 = moderately important; clearly helpful for evaluating a good document set
+  - 4 = very important; strong effect on document set quality
+  - 5 = critical; if missing or violated, the document set is seriously inadequate for answering the query
+
+  Fixed meta-rubric framework:
+
+  Set-level meta rubrics:
+
+  1. Relevance
+  Explanation: Whether the document set covers the information needs required to answer the query, and in particular whether it covers the key information mentioned across the different paragraphs of the reference answer. Each distinct paragraph in the reference answer typically corresponds to a need aspect that the document set should support with evidence.
+  Count limit: You may generate multiple query-specific rubrics here, up to a maximum of 7. This is an upper limit, not a target. Generate only as many rubrics as needed to cover distinct aspects under this meta rubric. If the query is simple or has only a few distinct information needs, generate fewer rubrics. Do not add extra rubrics merely to reach the maximum number. Different query-specific rubrics must be diverse and must not be obviously repetitive.
+
+  2. Conciseness
+  Explanation: Whether the documents in the set have low redundancy with each other (i.e., different documents do not repeat the same information heavily) and the set contains few documents irrelevant to the query.
+  Count limit: Generate exactly one query-specific rubric under this meta rubric.
+
+  3. Consistency
+  Explanation: Whether the key facts, claims, and conclusions used to answer the query across the document set are mutually compatible rather than contradictory. A high-quality set should not contain serious unresolved conflicts on important points; if multiple viewpoints exist, they should be clearly distinguishable rather than mixed into confusion.
+  Count limit: Generate exactly one query-specific rubric under this meta rubric.
+
+  Doc-level meta rubrics:
+
+  4. Source Authority
+  Explanation: This meta rubric evaluates whether a single document is relevant to the query, provides evidence for information needed to answer it, and comes from an authoritative and trustworthy website. It should only be triggered when the query clearly belongs to a domain where source authority is critical, such as medicine, law, finance, policy, government regulation, science, or other high-stakes or expertise-sensitive areas. If the query is a general, everyday, entertainment, or low-stakes informational query where source authority is not a meaningful quality signal, do NOT generate any query-specific rubric here and output an empty list []. A document that is irrelevant to the query or does not provide useful evidence for answering it should receive a low score under this rubric, regardless of how authoritative the source appears.
+  Count limit: At most one query-specific rubric under this meta rubric.
+  Example: The document contains query-relevant evidence needed to answer the query, and it comes from [type of authoritative website, institution, publication, or recognized expert].
+
+  5. Timeliness
+  Explanation: This meta rubric evaluates whether a single document is relevant to the query, provides evidence for information needed to answer it, and satisfies the temporal requirements of the query. It should only be triggered when the query explicitly contains a time constraint (e.g., a specific year, date, or time range) or clearly requires the latest / most up-to-date information (e.g., "latest", "current", "recent", newly released products, ongoing events, fast-moving topics). If the query has no temporal constraint and does not require up-to-date information, do NOT generate any query-specific rubric here and output an empty list []. A document that is irrelevant to the query or does not provide useful evidence for answering it should receive a low score under this rubric, regardless of how recent or newly updated it is.
+  Count limit: At most one query-specific rubric under this meta rubric.
+  Example: The document contains query-relevant evidence needed to answer the query, and its publication time or update time satisfies the query's temporal requirement of [specific time range / latest information requirement].
+
+  Important constraints:
+  - Each query-specific rubric must be written specifically according to the content of the query and the reference answer, especially the key aspects for answering the query. Do not write broad, generic, reusable, or template-like rubrics that could apply equally well to other queries.
+  - Do not create duplicate rubrics under the same meta rubric.
+  - Strictly respect the per-meta-rubric count limits stated above.
+
+  Output format:
+  Return JSON only.
+
+  Use exactly the following top-level structure and exactly the following meta-rubric names:
+
+  {{
+    "set_level_rubrics": {{
+      "Relevance": [{{"description": "...", "weight": ...}}, {{"description": "...", "weight": ...}}],
+      "Conciseness": [{{"description": "...", "weight": ...}}],
+      "Consistency": [{{"description": "...", "weight": ...}}]
+    }},
+    "doc_level_rubrics": {{
+      "Source Authority": [{{"description": "...", "weight": ...}}],
+      "Timeliness": [{{"description": "...", "weight": ...}}]
+    }}
+  }}
+
+  For each meta-rubric key, the value must be a list of objects.
+  Each object must contain exactly these two fields:
+  - "description": a concise query-specific rubric description
+  - "weight": an integer from 1 to 5
+  If a meta rubric (i.e., Source Authority and Timeliness) is not needed for this query, output an empty list [] for that meta rubric.
+  Do not output any other fields.
+
+  Now use the following inputs.
+
+  [QUERY]
+  {query}
+
+  [QUERY INTENT]
+  {query_intent}
+
+  [REFERENCE ANSWER]
+  {reference_answer}
+
+  Generate the JSON now.
