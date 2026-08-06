@@ -1,6 +1,7 @@
 <h1 align="center"> Training Documents Reranker with Search Rubrics for Deep Research Agent </h1>
 
 <div align="center">
+<a href="https://arxiv.org/pdf/2608.03527" target="_blank"><img src=https://img.shields.io/badge/Paper-arXiv-b5212f.svg?logo=arxiv></a>
 <a href="https://modelscope.cn/models/lwhlwh/rubricranker_sft_rl" target="_blank"><img src=https://custom-icon-badges.demolab.com/badge/ModelScope%20Model-624aff?style=flat&logo=modelscope&logoColor=white></a>
 <a href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/badge/LICENSE-MIT-green.svg"></a>
 <a href="https://www.python.org/downloads/release/python-3100/"><img alt="Static Badge" src="https://img.shields.io/badge/Python-3.10+-blue.svg"></a>
