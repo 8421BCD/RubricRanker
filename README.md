@@ -10,7 +10,7 @@
 
 ## 📣 Latest News
 
-- **[Jun 24, 2026]**: 🚀 We released our full codebase, **[model](https://modelscope.cn/models/lwhlwh/rubricranker_sft_rl)**, **[SFT data](https://modelscope.cn/datasets/lwhlwh/rubricranker_sft_data)** and **[RL data](https://modelscope.cn/datasets/lwhlwh/rubricranker_rl_data)** of RubricRanker.
+- **[Jun 24, 2026]**: 🚀 We released our full codebase of RubricRanker.
 
 ## 📋 Table of Contents
 
